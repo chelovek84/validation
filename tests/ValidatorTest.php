@@ -1579,7 +1579,27 @@ class ValidatorTest extends TestCase
             ['uppercase'],
             ['extension:jpg'],
             ['url:jdbc'],
+            ['after:2000-01-01'],
+            ['before:2100-01-01'],
         ];
+    }
+
+    public function testDateComparisonRulesOnOptionalAndInvalidValues()
+    {
+        $rules = ['field' => 'after:2000-01-01|before:2100-01-01'];
+
+        // Blank form input is skipped like any optional field.
+        $this->assertTrue($this->validator->validate(['field' => ''], $rules)->passes());
+
+        $validation = $this->validator->validate(['field' => 'not a date'], $rules);
+        $this->assertTrue($validation->fails());
+        $this->assertSame(
+            'The Field must be a date after 2000-01-01.',
+            $validation->errors()->first('field:after')
+        );
+
+        $this->assertTrue($this->validator->validate(['field' => '2020-01-01'], $rules)->passes());
+        $this->assertTrue($this->validator->validate(['field' => '1999-01-01'], $rules)->fails());
     }
 
     /**

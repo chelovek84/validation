@@ -34,8 +34,24 @@ class AfterTest extends TestCase
      */
     public function testANonWellFormedDateCannotBeValidated($date)
     {
+        $this->assertFalse(
+            $this->validator->fillParameters(["tomorrow"])->check($date)
+        );
+    }
+
+    public function testEmptyArrayOrObjectValueIsNotValid()
+    {
+        foreach ([null, '', ['2020-01-01'], new \stdClass()] as $value) {
+            $this->assertFalse(
+                $this->validator->fillParameters(["tomorrow"])->check($value)
+            );
+        }
+    }
+
+    public function testInvalidParamThrowsEvenIfValueIsInvalid()
+    {
         $this->expectException(\Exception::class);
-        $this->validator->fillParameters(["tomorrow"])->check($date);
+        $this->validator->fillParameters(["to,morrow"])->check("abc");
     }
 
     public function testUserProvidedParamCannotBeValidatedBecauseItIsInvalid()

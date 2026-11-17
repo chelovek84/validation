@@ -2,6 +2,7 @@
 
 namespace Rakit\Validation\Rules;
 
+use Rakit\Validation\Helper;
 use Rakit\Validation\Rule;
 
 class Before extends Rule
@@ -26,12 +27,14 @@ class Before extends Rule
         $this->requireParameters($this->fillableParams);
         $time = $this->parameter('time');
 
-        if (!$this->isValidDate($value)) {
-            throw $this->throwException($value);
-        }
-
+        // An invalid rule parameter is a programming error.
         if (!$this->isValidDate($time)) {
             throw $this->throwException($time);
+        }
+
+        // An invalid value is user input: fail the rule instead of throwing.
+        if (!Helper::isStringable($value) || !$this->isValidDate((string) $value)) {
+            return false;
         }
 
         return $this->getTimeStamp($time) > $this->getTimeStamp($value);
