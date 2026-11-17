@@ -8,8 +8,9 @@ use stdClass;
 
 class RequiredTest extends TestCase
 {
+    protected $rule;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->rule = new Required;
     }

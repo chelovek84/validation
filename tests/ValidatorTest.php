@@ -13,7 +13,7 @@ class ValidatorTest extends TestCase
     /** @var Validator */
     protected $validator;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->validator = new Validator;
     }
@@ -545,11 +545,9 @@ class ValidatorTest extends TestCase
         $this->assertTrue($v2->passes());
     }
 
-    /**
-     * @expectedException \Rakit\Validation\RuleNotFoundException
-     */
     public function testNonExistentValidationRule()
     {
+        $this->expectException(\Rakit\Validation\RuleNotFoundException::class);
         $validation = $this->validator->make([
             'name' => "some name"
         ], [
@@ -618,11 +616,9 @@ class ValidatorTest extends TestCase
         $this->assertTrue($validation->passes());
     }
 
-    /**
-     * @expectedException \Rakit\Validation\RuleQuashException
-     */
     public function testInternalValidationRuleCannotBeOverridden()
     {
+        $this->expectException(\Rakit\Validation\RuleQuashException::class);
 
         $this->validator->addValidator('required', new Required());
 
@@ -1570,5 +1566,45 @@ class ValidatorTest extends TestCase
         ]);
 
         $this->assertTrue($validation->passes());
+    }
+
+    public function stringRulesProvider()
+    {
+        return [
+            ['regex:/^\\d+$/'],
+            ['date'],
+            ['digits:2'],
+            ['digits_between:1,3'],
+            ['lowercase'],
+            ['uppercase'],
+            ['extension:jpg'],
+            ['url:jdbc'],
+        ];
+    }
+
+    /**
+     * Missing optional fields are passed to rules as null, which PHP 8.1+
+     * deprecates for internal string functions.
+     *
+     * @dataProvider stringRulesProvider
+     */
+    public function testStringRulesAcceptMissingOptionalValue($rule)
+    {
+        $validation = $this->validator->validate([], ['field' => $rule]);
+        $this->assertTrue($validation->passes());
+    }
+
+    /**
+     * On PHP 8 arrays and objects given to internal string functions throw a
+     * TypeError; the rule must just fail, like it did on PHP 7.
+     *
+     * @dataProvider stringRulesProvider
+     */
+    public function testStringRulesFailOnArrayOrObjectValue($rule)
+    {
+        foreach ([['12'], new \stdClass()] as $value) {
+            $validation = $this->validator->validate(['field' => $value], ['field' => $rule]);
+            $this->assertTrue($validation->fails());
+        }
     }
 }

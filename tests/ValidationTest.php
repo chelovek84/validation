@@ -19,7 +19,9 @@ class ValidationTest extends TestCase
     {
         $class = new ReflectionClass(Validation::class);
         $method = $class->getMethod('parseRule');
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
 
         $validation = new Validation(new Validator(), [], []);
 

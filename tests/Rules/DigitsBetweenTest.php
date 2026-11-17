@@ -7,8 +7,9 @@ use PHPUnit\Framework\TestCase;
 
 class DigitsBetweenTest extends TestCase
 {
+    protected $rule;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->rule = new DigitsBetween;
     }

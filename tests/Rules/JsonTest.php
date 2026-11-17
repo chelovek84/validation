@@ -7,8 +7,9 @@ use PHPUnit\Framework\TestCase;
 
 class JsonTest extends TestCase
 {
+    protected $rule;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->rule = new Json;
     }
