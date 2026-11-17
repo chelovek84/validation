@@ -2,6 +2,7 @@
 
 namespace Rakit\Validation\Rules;
 
+use Rakit\Validation\Helper;
 use Rakit\Validation\Rule;
 
 class Date extends Rule
@@ -29,6 +30,9 @@ class Date extends Rule
         $this->requireParameters($this->fillableParams);
 
         $format = $this->parameter('format');
-        return date_create_from_format($format, $value) !== false;
+        if (!Helper::isStringable($value)) {
+            return false;
+        }
+        return date_create_from_format($format, (string) $value) !== false;
     }
 }

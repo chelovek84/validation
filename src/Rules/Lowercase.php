@@ -2,6 +2,7 @@
 
 namespace Rakit\Validation\Rules;
 
+use Rakit\Validation\Helper;
 use Rakit\Validation\Rule;
 
 class Lowercase extends Rule
@@ -18,6 +19,11 @@ class Lowercase extends Rule
      */
     public function check($value): bool
     {
-        return mb_strtolower($value, mb_detect_encoding($value)) === $value;
+        if (!Helper::isStringable($value)) {
+            return false;
+        }
+        $string = (string) $value;
+
+        return mb_strtolower($string, mb_detect_encoding($string)) === $value;
     }
 }

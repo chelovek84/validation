@@ -2,6 +2,7 @@
 
 namespace Rakit\Validation\Rules;
 
+use Rakit\Validation\Helper;
 use Rakit\Validation\Rule;
 
 class Url extends Rule
@@ -110,6 +111,9 @@ class Url extends Rule
      */
     public function validateJdbcScheme($value): bool
     {
-        return (bool) preg_match("/^jdbc:\w+:\/\//", $value);
+        if (!Helper::isStringable($value)) {
+            return false;
+        }
+        return (bool) preg_match("/^jdbc:\w+:\/\//", (string) $value);
     }
 }

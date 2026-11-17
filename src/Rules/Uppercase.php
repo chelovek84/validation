@@ -2,6 +2,7 @@
 
 namespace Rakit\Validation\Rules;
 
+use Rakit\Validation\Helper;
 use Rakit\Validation\Rule;
 
 class Uppercase extends Rule
@@ -18,6 +19,11 @@ class Uppercase extends Rule
      */
     public function check($value): bool
     {
-        return mb_strtoupper($value, mb_detect_encoding($value)) === $value;
+        if (!Helper::isStringable($value)) {
+            return false;
+        }
+        $string = (string) $value;
+
+        return mb_strtoupper($string, mb_detect_encoding($string)) === $value;
     }
 }

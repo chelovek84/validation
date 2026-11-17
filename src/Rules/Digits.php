@@ -2,6 +2,7 @@
 
 namespace Rakit\Validation\Rules;
 
+use Rakit\Validation\Helper;
 use Rakit\Validation\Rule;
 
 class Digits extends Rule
@@ -24,6 +25,11 @@ class Digits extends Rule
         $this->requireParameters($this->fillableParams);
 
         $length = (int) $this->parameter('length');
+
+        if (!Helper::isStringable($value)) {
+            return false;
+        }
+        $value = (string) $value;
 
         return ! preg_match('/[^0-9]/', $value)
                     && strlen((string) $value) == $length;

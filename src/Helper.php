@@ -195,6 +195,24 @@ class Helper
     }
 
     /**
+     * Whether $value can be given to an internal function's string parameter.
+     *
+     * Null and scalars are coerced to string, as PHP 7 did (since PHP 8.1 PHP
+     * deprecates passing null). Arrays and objects without __toString() throw a
+     * TypeError since PHP 8; on PHP 7 they only raised a warning and the rule
+     * failed, so rules return false for them.
+     *
+     * @param  mixed $value
+     * @return bool
+     */
+    public static function isStringable($value): bool
+    {
+        return $value === null
+            || is_scalar($value)
+            || (is_object($value) && method_exists($value, '__toString'));
+    }
+
+    /**
      * Get snake_case format from given string
      *
      * @param  string $value
@@ -219,7 +237,7 @@ class Helper
      * @param  string|null  $lastSeparator
      * @return string
      */
-    public static function join(array $pieces, string $separator, string $lastSeparator = null): string
+    public static function join(array $pieces, string $separator, ?string $lastSeparator = null): string
     {
         if (is_null($lastSeparator)) {
             $lastSeparator = $separator;
@@ -245,7 +263,7 @@ class Helper
      * @param  string|null  $suffix
      * @return array
      */
-    public static function wraps(array $strings, string $prefix, string $suffix = null): array
+    public static function wraps(array $strings, string $prefix, ?string $suffix = null): array
     {
         if (is_null($suffix)) {
             $suffix = $prefix;

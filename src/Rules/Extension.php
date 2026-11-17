@@ -44,7 +44,11 @@ class Extension extends Rule
         $allowedExtensionsText = Helper::join(Helper::wraps($allowedExtensions, ".", ""), ', ', ", {$or} ");
         $this->setParameterText('allowed_extensions', $allowedExtensionsText);
 
-        $ext = strtolower(pathinfo($value, PATHINFO_EXTENSION));
+        if (!Helper::isStringable($value)) {
+            return false;
+        }
+
+        $ext = strtolower(pathinfo((string) $value, PATHINFO_EXTENSION));
         return ($ext && in_array($ext, $allowedExtensions)) ? true : false;
     }
 }
